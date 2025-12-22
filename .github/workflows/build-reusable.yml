@@ -17,7 +17,12 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # 👇 AQUÍ SE USAN LOS SECRETS (EN EL BUILD)
       - name: Build with Maven
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: mvn clean package -DskipTests
 
       - name: Upload JAR artifact
@@ -29,10 +34,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 👇 AQUÍ SE USA OTRO SECRET
       - name: Build Docker image
-        run: docker build -t crudites:ci .
+        run: docker build -t ${{ secrets.DOCKER_IMAGE_NAME }}:ci .
 
-      # 👇👇👇 AQUÍ NACE EL TAG CONGELADO 👇👇👇
+      # 👇 AQUÍ NACE EL TAG CONGELADO
       - name: Create frozen tag
         if: startsWith(github.ref, 'refs/heads/feature/')
         run: |

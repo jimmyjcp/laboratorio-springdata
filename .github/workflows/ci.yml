@@ -14,3 +14,4 @@ jobs:
     permissions:
       contents: write   # 👈 CLAVE para crear tags
     uses: ./.github/workflows/build-reusable.yml
+    secrets: inherit
