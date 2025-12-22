@@ -31,3 +31,13 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t crudites:ci .
+
+      # 👇👇👇 AQUÍ NACE EL TAG CONGELADO 👇👇👇
+      - name: Create frozen tag
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        run: |
+          TAG_NAME="feature-${GITHUB_RUN_NUMBER}"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag -a "$TAG_NAME" -m "Frozen tag from feature pipeline"
+          git push origin "$TAG_NAME"
