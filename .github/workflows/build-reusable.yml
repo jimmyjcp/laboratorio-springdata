@@ -36,7 +36,7 @@ jobs:
 
       # 👇 AQUÍ SE USA OTRO SECRET
       - name: Build Docker image
-        run: docker build -t crudites:ci .
+        run: docker build -t ${{ secrets.DOCKER_IMAGE_NAME }}:ci .
 
       # 👇 AQUÍ NACE EL TAG CONGELADO
       - name: Create frozen tag
