@@ -12,17 +12,33 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  vault:
+    image: hashicorp/vault:1.13.3
+    container_name: vault-springdata
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "my-root-token" # Token para entrar a la UI
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK # Necesario para que Vault maneje memoria de forma segura
+
   app:
     build: .
     container_name: springdata-app
     depends_on:
       - mysql
+      - vault # Ahora depende de que Vault también esté listo
     ports:
       - "8081:8080"
     environment:
+      # Spring usará este nombre de servicio para conectarse dentro de Docker
+      SPRING_CLOUD_VAULT_URI: http://vault:8200
+      SPRING_CLOUD_VAULT_TOKEN: my-root-token
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: admin1234
+      # Nota: Pronto borraremos USERNAME y PASSWORD de aquí para que vengan de Vault
+      #SPRING_DATASOURCE_USERNAME: root
+      #SPRING_DATASOURCE_PASSWORD: admin1234
       SPRING_JPA_DATABASE-PLATFORM: org.hibernate.dialect.MySQL8Dialect
 
 volumes:
