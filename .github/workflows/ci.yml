@@ -1,0 +1,17 @@
+name: CI - Feature Pipeline
+
+on:
+  push:
+    branches:
+      - feature/**
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  call-reusable-build:
+    permissions:
+      contents: write   # 👈 CLAVE para crear tags
+    uses: ./.github/workflows/build-reusable.yml
+    secrets: inherit
